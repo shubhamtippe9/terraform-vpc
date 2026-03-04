@@ -91,3 +91,70 @@ resource "aws_route_table_association" "private_assoc" {
   subnet_id      = aws_subnet.private_subnet.id
   route_table_id = aws_route_table.private_rt.id
 }
+resource "aws_security_group" "public_sg" {
+  name   = "my-sg"
+  vpc_id = aws_vpc.my_vpc.id
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "public-sg"
+  }
+}
+resource "aws_security_group" "private_sg" {
+  name   = "private-sg"
+  vpc_id = aws_vpc.my_vpc.id
+
+  ingress {
+    description     = "SSH from public instance"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.public_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "private-sg"
+  }
+}
+resource "aws_instance" "public_instance" {
+  ami                         = "ami-0f3caa1cf4417e51b"
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.public_subnet.id
+  vpc_security_group_ids      = [aws_security_group.public_sg.id]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "public-instance"
+  }
+}
+resource "aws_instance" "private_instance" {
+  ami                    = "ami-0f3caa1cf4417e51b"
+  instance_type          = "t3.micro"
+  subnet_id              = aws_subnet.private_subnet.id
+  vpc_security_group_ids = [aws_security_group.private_sg.id]
+
+  tags = {
+    Name = "private-instance"
+  }
+}
