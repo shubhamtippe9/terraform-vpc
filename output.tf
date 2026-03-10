@@ -1,4 +1,4 @@
-output "public-ip" {
-    value = aws_instance.fct.public_ip
+output "instance_public_ip" {
+    value = aws_instance.public_instance.public_ip
   
 }
