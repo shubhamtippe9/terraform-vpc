@@ -1,268 +1,155 @@
-# Terraform AWS VPC with Public and Private EC2 Instances
+# Terraform AWS VPC Project
 
-## 📌 Project Overview
+## Project Overview
 
-This project uses **Terraform** to create a secure AWS infrastructure that includes a **VPC, Public Subnet, Private Subnet, NAT Gateway, Security Groups, and EC2 instances**.
+This project creates an AWS infrastructure using **Terraform**.
 
-The architecture allows:
+It creates:
 
-* Public EC2 instance accessible from the internet
-* Private EC2 instance accessible only through the public instance (Bastion Host)
-* Private instance internet access via **NAT Gateway**
+* VPC
+* Public Subnet
+* Private Subnet
+* Internet Gateway
+* NAT Gateway
+* Route Tables
+* Security Groups
+* Public EC2 Instance
+* Private EC2 Instance
 
-This project demonstrates **Infrastructure as Code (IaC)** using Terraform.
+The public EC2 instance can access the internet, and the private EC2 instance can be accessed through the public instance.
 
 ---
 
-# 🏗 Architecture
+# Architecture
 
 Internet
-│
-▼
+↓
 Internet Gateway
-│
-Public Route Table
-│
+↓
 Public Subnet
-│
-Public EC2 Instance (Bastion Host)
-│
-SSH Access
-│
+↓
+Public EC2 Instance
+↓
 Private Subnet
-│
+↓
 Private EC2 Instance
-│
-NAT Gateway → Internet Access
+↓
+NAT Gateway → Internet
 
 ---
 
-# ⚙️ Technologies Used
+# Files in Project
 
-* AWS (Amazon Web Services)
-* Terraform
-* EC2
-* VPC Networking
-* NAT Gateway
-* Security Groups
-
----
-
-# ☁️ Infrastructure Components
-
-## 1️⃣ VPC
-
-Creates a Virtual Private Cloud.
-
-CIDR Block:
-
-```
-10.0.0.0/16
-```
-
----
-
-## 2️⃣ Subnets
-
-### Public Subnet
-
-CIDR:
-
-```
-10.0.1.0/24
-```
-
-Features:
-
-* Automatically assigns Public IP
-* Used for public EC2 instance
-
-### Private Subnet
-
-CIDR:
-
-```
-10.0.2.0/24
-```
-
-Features:
-
-* No Public IP
-* Used for private EC2 instance
-
----
-
-## 3️⃣ Internet Gateway
-
-Provides internet access to the **public subnet**.
-
----
-
-## 4️⃣ NAT Gateway
-
-Allows **private subnet instances to access the internet** for:
-
-* Software updates
-* Package installations
-
-Without exposing them to public internet.
-
----
-
-## 5️⃣ Route Tables
-
-### Public Route Table
-
-Routes internet traffic to:
-
-```
-0.0.0.0/0 → Internet Gateway
-```
-
-### Private Route Table
-
-Routes internet traffic to:
-
-```
-0.0.0.0/0 → NAT Gateway
-```
-
----
-
-## 6️⃣ Security Groups
-
-### Public Security Group
-
-Allows:
-
-* SSH (Port 22) from anywhere
-
-### Private Security Group
-
-Allows:
-
-* SSH only from the **Public EC2 Instance**
-
----
-
-## 7️⃣ EC2 Instances
-
-### Public EC2 Instance
-
-* Located in Public Subnet
-* Has Public IP
-* Used as **Bastion Host**
-
-### Private EC2 Instance
-
-* Located in Private Subnet
-* No Public IP
-* Accessible only through Public EC2
-
----
-
-# 📂 Project Structure
-
-```
-terraform-vpc-project
+```id="fd4uq9"
+terraform-project
 │
 ├── main.tf
-├── README.md
+├── output.tf
+└── README.md
 ```
 
 ---
 
-# ✅ Prerequisites
+# main.tf
 
-Before running Terraform:
+This file contains all Terraform resources like:
 
-Install the following:
+* VPC
+* Subnets
+* Internet Gateway
+* NAT Gateway
+* Security Groups
+* EC2 Instances
 
-* Terraform
-* AWS CLI
-* AWS Account
-* IAM permissions for VPC, EC2, and networking
+---
 
-Verify Terraform installation:
+# output.tf
 
+This file shows the **Public IP of the EC2 instance** after Terraform creates the infrastructure.
+
+Example:
+
+```hcl id="k0gc6w"
+output "instance_public_ip" {
+  value = aws_instance.public_instance.public_ip
+}
 ```
+
+After running Terraform, it will display:
+
+```id="e5ubgs"
+instance_public_ip = 54.xx.xx.xx
+```
+
+---
+
+# Requirements
+
+Before running this project you need:
+
+* AWS Account
+* AWS CLI
+* Terraform installed
+
+Check Terraform version:
+
+```id="eg7o0r"
 terraform -version
 ```
 
 ---
 
-# 🚀 Deployment Steps
+🚀 Deployment Steps
 
-## 1️⃣ Initialize Terraform
+### 1 Initialize Terraform
 
-```
+```id="r2uhb6"
 terraform init
 ```
 
----
+### 2 See Plan
 
-## 2️⃣ Validate Configuration
-
-```
-terraform validate
-```
-
----
-
-## 3️⃣ Preview Infrastructure
-
-```
+```id="5nww0k"
 terraform plan
 ```
 
----
+### 3 Create Infrastructure
 
-## 4️⃣ Apply Configuration
-
-```
-terraform apply
+```id="r92pxo"
+terraform apply --auto-approve
 ```
 
-Type:
+# Destroy Resources
 
-```
-yes
-```
+To delete all resources:
 
-Terraform will create all AWS resources.
-
----
-
-# 🗑 Destroy Infrastructure
-
-To delete all created resources:
-
-```
-terraform destroy
+```id="eb0j4u"
+terraform destroy --auto-approve
 ```
 
 ---
 
-# 🎯 Learning Outcomes
+🎯 Learning Outcomes
 
 This project helps understand:
 
-* Terraform Infrastructure as Code
-* AWS VPC Networking
-* Public vs Private Subnet
-* NAT Gateway architecture
-* Bastion Host concept
-* Security Group configuration
+Terraform Infrastructure as Code
 
----
+AWS VPC networking
 
-# 👨‍💻 Author
+Public vs Private Subnet
+
+NAT Gateway usage
+
+Bastion Host architecture
+
+Terraform outputs
+
+👨‍💻 Author
 
 Shubham Tippe
 Cloud & DevOps Learner
 
----
+📜 License
 
-# 📜 License
-
-This project is for learning and educational purposes.
+This project is for educational and learning purposes.
